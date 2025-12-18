@@ -131,8 +131,8 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
         raise ValueError("max_range must be greater than min_range.")
 
     target_address = '16RGFo6hjq9ym6Pj7N5H7L1NR1rVPJyw2v'
-    quantum_registers = 125
-    num_ancillas = 10
+    quantum_registers = 100
+    num_ancillas = 8
     num_iterations = 5  # Kurangi untuk testing, naikkan nanti
 
     print("Mencari backend yang tersedia...")
