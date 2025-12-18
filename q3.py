@@ -80,7 +80,7 @@ def private_key_to_compressed_address(private_key_hex):
 def grover_oracle(circuit, private_key_qubits, public_key_x, g_x, g_y, p, ancilla):
     circuit.barrier()
     num_qubits = 125
-    target_state = random.randint(0x10000000000000000000000000000000, 0x1fffffffffffffffffffffffffffffff)
+    target_state = random.randint(0x4000000000000000000000000000000000, 0x7fffffffffffffffffffffffffffffffff)
     computed_x, _ = scalar_multiplication(target_state, g_x, g_y, p)
 
     if computed_x == public_key_x:
@@ -130,10 +130,10 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
     if max_range <= min_range:
         raise ValueError("max_range must be greater than min_range.")
 
-    target_address = '1PXAyUB8ZoH3WD8n5zoAthYjN15yN5CVq5'
+    target_address = '16RGFo6hjq9ym6Pj7N5H7L1NR1rVPJyw2v'
     quantum_registers = 125
     num_ancillas = 1
-    num_iterations = 1  # Kurangi untuk testing, naikkan nanti
+    num_iterations = 2  # Kurangi untuk testing, naikkan nanti
 
     print("Mencari backend yang tersedia...")
     try:
@@ -402,16 +402,16 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
             time.sleep(5)
 
 def main():
-    target_address = '1PXAyUB8ZoH3WD8n5zoAthYjN15yN5CVq5'
-    public_key_x_hex = "0233709eb11e0d4439a729f21c2c443dedb727528229713f0065721ba8fa46f00e"
+    target_address = '16RGFo6hjq9ym6Pj7N5H7L1NR1rVPJyw2v'
+    public_key_x_hex = "02145d2611c823a396ef6712ce0f712f09b9b4f3135e3e0aa3230fb9b6d08d1e16"
     public_key_x = int(public_key_x_hex[2:], 16)
     
     # Elliptic curve parameters
     g_x = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
     g_y = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199B0C75643B8F8E4F
     p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
-    min_range = 0x10000000000000000000000000000000
-    max_range = 0x1fffffffffffffffffffffffffffffff
+    min_range = 0x4000000000000000000000000000000000
+    max_range = 0x7fffffffffffffffffffffffffffffffff
 
     print("Starting quantum brute-force search...")
     print(f"Target Bitcoin Address: {target_address}")
