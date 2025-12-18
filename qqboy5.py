@@ -26,10 +26,10 @@ import math
 # Load IBMQ account using QiskitRuntimeService dengan instance yang spesifik
 QiskitRuntimeService.save_account(
     channel='ibm_quantum_platform',
-    token='8uJVaa7W8BQOYYJlx6MsBQ_CTY7vzN3sO4Fby8AHBALg',
+    token='EGgzrNGjy1u-7jynADJUFWxU2MLn79-7GLKYmGvpvxpf',
     overwrite=True,
     set_as_default=True,
-    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/8b1f2c19555e44cca6b21ce9e0fdfcfe:6a63c2ec-38c9-4177-b23c-105bdb444891::"
+    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/901be7515d8c4ffab664ea5046ab4ce2:96f4f165-2b76-45aa-bd8c-4af5c72fcb85::"
 )
 
 # Load the service dengan instance yang spesifik
