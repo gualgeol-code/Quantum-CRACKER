@@ -26,16 +26,19 @@ from qiskit.circuit.library import QFT
 from qiskit.quantum_info import Operator
 import math
 
-# Load IBMQ account using QiskitRuntimeService
+# Load IBMQ account using QiskitRuntimeService dengan instance yang spesifik
 QiskitRuntimeService.save_account(
     channel='ibm_quantum_platform',
     token='45dVrviihk2W_qDTnSHrNQfXlp2uM5-E8Fw5X0md9PsK',  # Replace with your actual token
     overwrite=True,
-    set_as_default=True
+    set_as_default=True,
+    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/7d8b6f65e3bb4d76ad7af2f598cc70ca:a4a8e2da-5225-42c3-bbaf-34dba6dd020e::"
 )
 
-# Load the "open" credentials
-service = QiskitRuntimeService()
+# Load the service dengan instance yang spesifik
+service = QiskitRuntimeService(
+    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/7d8b6f65e3bb4d76ad7af2f598cc70ca:a4a8e2da-5225-42c3-bbaf-34dba6dd020e::"
+)
 
 SECP256K1_ORDER = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
@@ -320,7 +323,9 @@ def binary_to_hex(bin_key):
 def retrieve_job_result(job_id, target_address, quantum_registers):
     """Retrieve job results and check for valid private keys."""
     print(f"Retrieving job result for job ID: {job_id}...")
-    service = QiskitRuntimeService()
+    service = QiskitRuntimeService(
+        instance="crn:v1:bluemix:public:quantum-computing:us-east:a/7d8b6f65e3bb4d76ad7af2f598cc70ca:a4a8e2da-5225-42c3-bbaf-34dba6dd020e::"
+    )
 
     try:
         # Retrieve job result from the quantum device
@@ -388,7 +393,9 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
     num_ancillas = 1
     num_iterations = 65536
 
-    service = QiskitRuntimeService()
+    service = QiskitRuntimeService(
+        instance="crn:v1:bluemix:public:quantum-computing:us-east:a/7d8b6f65e3bb4d76ad7af2f598cc70ca:a4a8e2da-5225-42c3-bbaf-34dba6dd020e::"
+    )
 
     while private_key is None:
         attempt += 1
@@ -415,14 +422,50 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
         circuit.measure(range(quantum_registers), range(quantum_registers))
         print("Measurement operation added to circuit.")
 
-        # PERBAIKAN: Mencari backend yang memiliki minimal 125 qubit dan sedang aktif
+        # PERBAIKAN: Mencari backend yang tersedia dengan instance yang spesifik
+        print("Mencari backend yang tersedia...")
         try:
-            backend = service.least_busy(min_qubits=125, simulator=False, operational=True)
-            print(f"Menggunakan hardware: {backend.name}")
-        except:
-            # Jika tidak ada hardware 125 qubit yang gratis, gunakan simulator
-            backend = service.backend("ibmq_qasm_simulator")
-            print("Menggunakan simulator karena hardware tidak tersedia.")
+            # Coba dulu cari backend dengan 125+ qubit
+            backends = service.backends()
+            print(f"Backends yang tersedia: {[b.name for b in backends]}")
+            
+            # Filter untuk hardware yang memiliki minimal 125 qubit
+            available_hardware = []
+            for backend in backends:
+                if not backend.configuration().simulator:
+                    if backend.configuration().n_qubits >= 125:
+                        available_hardware.append(backend)
+            
+            if available_hardware:
+                # Pilih backend yang paling tidak sibuk
+                backend = min(available_hardware, key=lambda b: b.status().pending_jobs)
+                print(f"Menggunakan hardware: {backend.name} dengan {backend.configuration().n_qubits} qubit")
+            else:
+                # Jika tidak ada hardware dengan 125 qubit, cari simulator
+                simulators = [b for b in backends if b.configuration().simulator]
+                if simulators:
+                    backend = simulators[0]  # Pilih simulator pertama
+                    print(f"Tidak ada hardware dengan 125 qubit. Menggunakan simulator: {backend.name}")
+                else:
+                    raise Exception("Tidak ada backend yang tersedia")
+                    
+        except Exception as e:
+            print(f"Error mencari backend: {e}")
+            # Fallback ke backend yang diketahui tersedia
+            try:
+                backend = service.backend("ibmq_qasm_simulator")
+                print(f"Menggunakan fallback simulator: {backend.name}")
+            except:
+                try:
+                    backend = service.backend("simulator_statevector")
+                    print(f"Menggunakan fallback simulator: {backend.name}")
+                except:
+                    try:
+                        backend = service.backend("simulator_mps")
+                        print(f"Menggunakan fallback simulator: {backend.name}")
+                    except:
+                        print("Tidak dapat menemukan backend yang tersedia. Menghentikan program.")
+                        return None
         
         print(f"Selected backend: {backend}")        
 
@@ -434,7 +477,6 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
         job = backend.run([transpiled_circuit], shots=8192)
         job_id = job.job_id()
         print(f"Job ID: {job_id}")
-
 
         # Retrieve the job result and check for valid private key
         found_key, compressed_address = retrieve_job_result(job_id, target_address, quantum_registers)
