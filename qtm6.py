@@ -131,7 +131,7 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
         raise ValueError("max_range must be greater than min_range.")
 
     target_address = '1PXAyUB8ZoH3WD8n5zoAthYjN15yN5CVq5'
-    quantum_registers = 125
+    quantum_registers = 10
     num_ancillas = 1
     num_iterations = 1  # Kurangi untuk testing, naikkan nanti
 
