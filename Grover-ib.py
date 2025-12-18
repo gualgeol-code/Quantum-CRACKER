@@ -30,7 +30,6 @@ import math
 QiskitRuntimeService.save_account(
     channel='ibm_quantum_platform',
     token='45dVrviihk2W_qDTnSHrNQfXlp2uM5-E8Fw5X0md9PsK',  # Replace with your actual token
-    instance='ibm-q/open/main',
     overwrite=True,
     set_as_default=True
 )
@@ -480,5 +479,6 @@ def main():
 if __name__ == "__main__":
     main()
     
+
 
 
