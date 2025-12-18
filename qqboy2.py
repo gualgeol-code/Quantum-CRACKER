@@ -26,10 +26,10 @@ import math
 # Load IBMQ account using QiskitRuntimeService dengan instance yang spesifik
 QiskitRuntimeService.save_account(
     channel='ibm_quantum_platform',
-    token='45dVrviihk2W_qDTnSHrNQfXlp2uM5-E8Fw5X0md9PsK',
+    token='yY74ekU5S_x2GpDawPqq0KZpbkOcikB9KAZs-jB1mdy-',
     overwrite=True,
     set_as_default=True,
-    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/7d8b6f65e3bb4d76ad7af2f598cc70ca:a4a8e2da-5225-42c3-bbaf-34dba6dd020e::"
+    instance="crn:v1:bluemix:public:quantum-computing:us-east:a/8b1f2c19555e44cca6b21ce9e0fdfcfe:6a63c2ec-38c9-4177-b23c-105bdb444891::"
 )
 
 # Load the service dengan instance yang spesifik
@@ -204,7 +204,7 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
             # Format PUB (Primitive Unified Blob) yang benar adalah:
             # (circuit, parameter_values, shots)
             # Karena circuit Anda tidak punya parameter, gunakan None untuk parameter_values.
-            shots = 10000000
+            shots = 5000
             pub = (transpiled_circuit, None, shots)  # <-- PERHATIKAN FORMAT INI
 
             print(f"Running circuit with {shots} shots...")
@@ -342,7 +342,7 @@ def quantum_brute_force(public_key_x: int, g_x: int, g_y: int, p: int, min_range
                     print("SamplerV2 created successfully with Session")
                     
                     # Jalankan circuit dengan format yang sama
-                    shots = 1000000
+                    shots = 5000
                     pub = (transpiled_circuit, None, shots)
                     print(f"Running circuit with {shots} shots...")
                     job = sampler.run([pub])
